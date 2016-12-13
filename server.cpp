@@ -28,7 +28,7 @@ public:
             int fd = data.readFileDescriptor();
             qDebug() << "~~~  onTransact client sent a fileHandle" << fd;
             QFile f;
-            f.open(fd, QIODevice::ReadOnly, QFile::AutoCloseHandle);
+            f.open(fd, QIODevice::ReadOnly, QFile::DontCloseHandle);
             f.seek(0);
             qDebug() << "~~~  onTransact fileHandle content " << f.readAll();
             reply.writeVariant(22);

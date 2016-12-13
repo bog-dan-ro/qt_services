@@ -46,14 +46,18 @@ public:
         {
             // test file handler
             QByteArray fileName = QDir::homePath().toLatin1() + "/test";
-            int fd = open(fileName.constData(), O_CREAT | O_RDWR);
-            write(fd, "test fd", 7);
-
-            QAndroidParcel sendData, replyData;
-            sendData.writeFileDescriptor(fd);
-            serviceBinder.transact(2, sendData, &replyData);
-            qDebug() << replyData.readVariant();
-            close(fd);
+            QFile f(fileName);
+            if (f.open(QIODevice::WriteOnly)) {
+                f.resize(0);
+                f.write("Test FD Data");
+                f.close();
+                int fd = open(fileName.constData(), O_RDWR);
+                QAndroidParcel sendData, replyData;
+                sendData.writeFileDescriptor(fd);
+                serviceBinder.transact(2, sendData, &replyData);
+                qDebug() << replyData.readVariant();
+                close(fd);
+            }
         }
 
         {
