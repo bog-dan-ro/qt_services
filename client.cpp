@@ -7,7 +7,7 @@
 #include <QAndroidJniObject>
 #include <QAndroidJniEnvironment>
 #include <QAndroidIntent>
-#include <QtAndroidServiceConnection>
+#include <QAndroidServiceConnection>
 #include <QAndroidBinder>
 #include <QAndroidParcel>
 #include <QColor>
@@ -27,9 +27,9 @@ public:
     }
 };
 
-class MyConnection : public QtAndroidServiceConnection
+class MyConnection : public QAndroidServiceConnection
 {
-    // QtAndroidServiceConnection interface
+    // QAndroidServiceConnection interface
 public:
     void onServiceConnected(const QString &name, const QAndroidBinder &serviceBinder) override
     {
@@ -104,9 +104,8 @@ int main(int argc, char *argv[])
 
     MyConnection connection;
     qDebug() << "~~ try to bind service";
-    qDebug() << QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity().object(),
-                                                      "com.kdab.training.MyService"),
-                                       connection(), 1);
+    qDebug() << QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.kdab.training.MyService"),
+                                       connection, QtAndroid::BindFlag::AutoCreate);
 
     return app.exec();
 }
