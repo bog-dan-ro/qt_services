@@ -47,6 +47,17 @@ public:
     }
 };
 
+struct TestStaticServer
+{
+    ~TestStaticServer()
+    {
+        qWarning() << "~~~~ ~TestStaticServer()" << a;
+    }
+    int a = 0;
+};
+
+static TestStaticServer test;
+
 class MyService : public QAndroidService
 {
 public:
@@ -59,10 +70,12 @@ public:
     }
 };
 
-
 int main(int argc, char *argv[])
 {
+    test.a = 10;
     qDebug() << "~~~ I'm alive !!!";
-    MyService app(argc, argv);
+    // MyService app(argc, argv);
+    QAndroidService app(argc, argv, [](const QAndroidIntent &){ return new MyBinder{};});
+    QTimer::singleShot(15000, [&app]{app.quit();});
     return app.exec();
 }

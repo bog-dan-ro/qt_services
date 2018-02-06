@@ -12,9 +12,11 @@
 #include <QAndroidParcel>
 #include <QColor>
 #include <QDir>
+#include <QTimer>
 
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 class MyBinder : public QAndroidBinder
 {
@@ -93,9 +95,20 @@ private:
     MyBinder m_binder;
 };
 
+struct TestStaticClient
+{
+    ~TestStaticClient()
+    {
+        qWarning() << "~~~~ ~TestStaticClient()" << a;
+    }
+    int a = 0;
+};
+
+static TestStaticClient test;
 
 int main(int argc, char *argv[])
 {
+    test.a = 100;
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
@@ -107,5 +120,6 @@ int main(int argc, char *argv[])
     qDebug() << QtAndroid::bindService(QAndroidIntent(QtAndroid::androidActivity(), "com.kdab.training.MyService"),
                                        connection, QtAndroid::BindFlag::AutoCreate);
 
+    QTimer::singleShot(10000, [&app]{app.quit();});
     return app.exec();
 }
